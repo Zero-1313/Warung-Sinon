@@ -67,7 +67,7 @@
     function tampilkanProduk() {
       const list = document.getElementById('produkList');
       list.innerHTML = 'Memuat...';
-      db.ref('produk_game/freefire').once('value').then(snapshot => {
+      db.ref('produk/game').once('value').then(snapshot => {
         list.innerHTML = '';
         snapshot.forEach(child => {
           const data = child.val();
