@@ -118,13 +118,14 @@
         waktu: new Date().toISOString()
       });
 
-      fetch('https://backend-wz.vercel.app/api/orderff', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kode: selected.kode, id })
-      })
-      .then(res => res.json())
-      .then(res => {
+      fetch("https://backend-wz.vercel.app/api/orderff", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ id: playerId, kode: selected.kode })
+})
+.then(res => res.json())
+.then(console.log)
+.catch(console.error);
         if (res.status === "success") {
           transaksiRef.update({ status: "sukses", respon: res });
           alert("Topup berhasil dikirim!");
