@@ -250,12 +250,12 @@
           console.error("Gagal mengambil data user:", err);
         });
       } else {
-        window.location.href = "../login.html";
+        window.location.href = "../index.html";
       }
     });
 
     function logout() {
-      auth.signOut().then(() => window.location.href = "../login.html");
+      auth.signOut().then(() => window.location.href = "../index.html");
     }
   </script>
 </body>
