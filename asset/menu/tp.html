@@ -21,7 +21,6 @@
     .popup h3 { margin-top: 0; color: #6a0dad; text-align: center; }
     .popup p { margin: 0.5rem 0; }
     .popup button { margin-top: 1rem; width: 100%; padding: 0.8rem; background: #6a0dad; color: white; border: none; border-radius: 8px; font-weight: bold; }
-    .close-btn { position: absolute; top: 10px; right: 20px; font-size: 1.5rem; background: none; border: none; color: #aaa; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -119,34 +118,35 @@
         waktu: new Date().toISOString()
       });
 
-      try {
-        fetch("https://script.google.com/macros/s/AKfycbxVDXw9K85aL5L_gyKSwi2UCiZHl-MeBfw0MnXI0VImhm91yeVo9itMUyaOuxnQCcaX/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    id: id,            // ID Player dari input
-    kode: selected.kode // kode produk dari Firebase
-  })
-})
-.then(res => res.json())
-.then(res => {
-  if (res.result === true || res.status === "success") {
-    transaksiRef.update({ status: "sukses", respon: res });
-    alert("Topup berhasil dikirim!");
-  } else {
-    transaksiRef.update({ status: "gagal", respon: res });
-    alert("Topup gagal: " + (res.message || "Error"));
-  }
-})
-.catch(err => {
-  transaksiRef.update({ status: "error", error: err.toString() });
-  alert("Gagal menghubungi server.");
-});
+      // Kirim ke Google Apps Script
+      fetch("https://script.google.com/macros/s/AKfycbxVDXw9K85aL5L_gyKSwi2UCiZHl-MeBfw0MnXI0VImhm91yeVo9itMUyaOuxnQCcaX/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: id,
+          kode: selected.kode
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.result === true || res.status === "success") {
+          transaksiRef.update({ status: "sukses", respon: res });
+          alert("Topup berhasil dikirim!");
+        } else {
+          transaksiRef.update({ status: "gagal", respon: res });
+          alert("Topup gagal: " + (res.message || "Error"));
+        }
+      })
+      .catch(err => {
+        transaksiRef.update({ status: "error", error: err.toString() });
+        alert("Gagal menghubungi server.");
+      });
 
       tutupKonfirmasi();
-    
+    }
 
+    // Jalankan saat halaman pertama kali dimuat
     tampilkanProduk();
   </script>
 </body>
-    </html>
+</html>
