@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Topup Free Fire</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f3f4f7, #e8ecf4);
+      margin: 0;
+      color: #333;
+    }
+
+    header {
+      background: #3f3d56;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    .banner {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 1rem;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.4rem;
+      border-radius: 10px;
+      border: 1.5px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #3f3d56;
+      outline: none;
+    }
+
+    .diamond-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .diamond {
+      padding: 1rem;
+      background: #f8f9fe;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .diamond.active {
+      border: 2px solid #3f3d56;
+      background: #e6e9ff;
+      transform: scale(1.05);
+    }
+
+    .diamond img {
+      width: 40px;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn {
+      background: #3f3d56;
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 10px;
+      width: 100%;
+      font-size: 1rem;
+      margin-top: 2rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #2e2b45;
+    }
+
+    .popup {
+      position: fixed;
+      left: 0;
+      bottom: -100%;
+      width: 100%;
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+      padding: 2rem 1.5rem;
+      transition: bottom 0.4s ease;
+      z-index: 999;
+    }
+
+    .popup.active {
+      bottom: 0;
+    }
+
+    .popup h3 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #3f3d56;
+      font-weight: 600;
+    }
+
+    .popup p {
+      margin: 0.5rem 0;
+      font-size: 0.95rem;
+    }
+
+    .confirm-btn {
+      background: #3f3d56;
+      color: white;
+      padding: 0.9rem;
+      border: none;
+      width: 100%;
+      border-radius: 12px;
+      font-weight: bold;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.8rem;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Topup Free Fire</header>
+
+  <div class="container">
+    <img class="banner" src="https://cdn.duniagames.co.id/assets/2021/01/14/freefireffmax-banner.jpg" alt="FF Banner" />
+
+    <label for="playerId">ID Player</label>
+    <input type="text" id="playerId" placeholder="Contoh: 123456789" />
+
+    <div class="diamond-grid">
+      <div class="diamond" data-nominal="70 Diamond" data-harga="14500">
+        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055646.png" />
+        <div>70 Diamond</div>
+        <small>Rp 14.500</small>
+      </div>
+      <div class="diamond" data-nominal="140 Diamond" data-harga="24900">
+        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055646.png" />
+        <div>140 Diamond</div>
+        <small>Rp 24.900</small>
+      </div>
+      <div class="diamond" data-nominal="210 Diamond" data-harga="35900">
+        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055646.png" />
+        <div>210 Diamond</div>
+        <small>Rp 35.900</small>
+      </div>
+    </div>
+
+    <button class="btn" onclick="bukaKonfirmasi()">Lanjutkan</button>
+  </div>
+
+  <!-- Popup Konfirmasi -->
+  <div class="popup" id="popup">
+    <button class="close-btn" onclick="tutupKonfirmasi()">×</button>
+    <h3>Konfirmasi Topup</h3>
+    <p><strong>ID:</strong> <span id="konf-id"></span></p>
+    <p><strong>Produk:</strong> <span id="konf-produk"></span></p>
+    <p><strong>Harga:</strong> <span id="konf-harga"></span></p>
+    <p><strong>Biaya Admin:</strong> Rp 1.000</p>
+    <p><strong>Total:</strong> <span id="konf-total"></span></p>
+    <button class="confirm-btn" onclick="prosesTopup()">Konfirmasi</button>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll('.diamond');
+    let selected = null;
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selected = card;
+      });
+    });
+
+    function bukaKonfirmasi() {
+      const id = document.getElementById("playerId").value.trim();
+      if (!id || !selected) return alert("Masukkan ID dan pilih nominal!");
+
+      const produk = selected.dataset.nominal;
+      const harga = parseInt(selected.dataset.harga);
+      const total = harga + 1000;
+
+      document.getElementById("konf-id").innerText = id;
+      document.getElementById("konf-produk").innerText = produk;
+      document.getElementById("konf-harga").innerText = "Rp " + harga.toLocaleString();
+      document.getElementById("konf-total").innerText = "Rp " + total.toLocaleString();
+
+      document.getElementById("popup").classList.add("active");
+    }
+
+    function tutupKonfirmasi() {
+      document.getElementById("popup").classList.remove("active");
+    }
+
+    function prosesTopup() {
+      alert("Topup sedang diproses!");
+      tutupKonfirmasi();
+    }
+  </script>
+
+</body>
+</html>

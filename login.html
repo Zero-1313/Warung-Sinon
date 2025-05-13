@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Warung Zero</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #4B0082, #8A2BE2);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .login-container {
+      background: white;
+      color: #4B0082;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .login-container h2 {
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      background: #6a0dad;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .login-container button:hover {
+      background: #5a00a1;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Warung Zero</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <div id="status" class="status"></div>
+    <div class="footer">Sinon Dev - Only Login Enabled</div>
+  </div>
+
+<!-- Ganti ini dengan CDN compat -->
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGtIGgcT5-WF74vuIuC11BQMNMb_S2BeY",
+    authDomain: "warung-sinon.firebaseapp.com",
+    databaseURL: "https://warung-sinon-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "warung-sinon",
+    storageBucket: "warung-sinon.appspot.com",
+    messagingSenderId: "130588032075",
+    appId: "1:130588032075:web:f38f328fb9b4a0820fa1ce",
+    measurementId: "G-Z40NV5DQQW"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  
+  function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const status = document.getElementById("status");
+    
+    if (!email || !password) {
+      status.innerText = "Email dan password wajib di isi !";
+      status.style.color = "red";
+      return;
+    }
+    
+    status.innerText = "Sedang login...";
+    status.style.color = "#333";
+    
+    auth.signInWithEmailAndPassword(email, password)
+      .then(() => {
+        status.innerText = "Login berhasil! Mengarahkan...";
+        status.style.color = "green";
+        setTimeout(() => {
+          window.location.href = "asset/dasbord.html";
+        }, 1000);
+      })
+      .catch((error) => {
+        status.innerText = "Gagal login: " + error.message;
+        status.style.color = "red";
+      });
+  }
+</script>
+</body>
+</html>
