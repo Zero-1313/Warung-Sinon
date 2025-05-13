@@ -34,6 +34,7 @@
   </div>
 
   <div class="popup" id="popup">
+    <button class="close-btn" onclick="tutupKonfirmasi()">×</button>
     <h3>Konfirmasi Topup</h3>
     <p><strong>ID:</strong> <span id="konfId"></span></p>
     <p><strong>Produk:</strong> <span id="konfNama"></span></p>
@@ -66,7 +67,7 @@
     function tampilkanProduk() {
       const list = document.getElementById('produkList');
       list.innerHTML = 'Memuat...';
-      db.ref('produk/game').once('value').then(snapshot => {
+      db.ref('produk_game/freefire').once('value').then(snapshot => {
         list.innerHTML = '';
         snapshot.forEach(child => {
           const data = child.val();
@@ -102,12 +103,10 @@
     async function prosesTopup() {
       const user = auth.currentUser;
       if (!user) return alert("Silakan login.");
-
-      const id = document.getElementById('playerId').value.trim();
+      const id = document.getElementById("playerId").value.trim();
       const total = selected.harga + 1000;
-      const transaksiRef = db.ref("transaksi_pulsa").push();
+      const transaksiRef = db.ref("transaksi_game").push();
 
-      // Simpan transaksi di Firebase terlebih dahulu
       await transaksiRef.set({
         uid: user.uid,
         id,
@@ -119,7 +118,6 @@
         waktu: new Date().toISOString()
       });
 
-      // Kirim ke backend (API VIP RESSELLER disembunyikan di backend)
       fetch('/api/orderff', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,7 +125,7 @@
       })
       .then(res => res.json())
       .then(res => {
-        if (res.result === true) {
+        if (res.status === "success") {
           transaksiRef.update({ status: "sukses", respon: res });
           alert("Topup berhasil dikirim!");
         } else {
