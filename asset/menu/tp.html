@@ -120,7 +120,7 @@
       });
 
       // Kirim ke backend (API VIP RESSELLER disembunyikan di backend)
-      fetch('/api/order-ff', {
+      fetch('/api/orderff', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kode: selected.kode, id })
