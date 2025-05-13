@@ -105,7 +105,7 @@
 
       const id = document.getElementById('playerId').value.trim();
       const total = selected.harga + 1000;
-      const transaksiRef = db.ref("transaksi_game").push();
+      const transaksiRef = db.ref("transaksi_pulsa").push();
 
       // Simpan transaksi di Firebase terlebih dahulu
       await transaksiRef.set({
