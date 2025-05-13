@@ -120,27 +120,31 @@
       });
 
       try {
-        const response = await fetch("https://backend-wz.vercel.app/api/orderff", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: id, kode: selected.kode })
-        });
-
-        const res = await response.json();
-        if (res.result === true || res.status === "success") {
-          await transaksiRef.update({ status: "sukses", respon: res });
-          alert("Topup berhasil dikirim!");
-        } else {
-          await transaksiRef.update({ status: "gagal", respon: res });
-          alert("Topup gagal: " + (res.message || "Tidak diketahui"));
-        }
-      } catch (err) {
-        await transaksiRef.update({ status: "error", error: err.message });
-        alert("Gagal menghubungi server: " + err.message);
-      }
+        fetch("https://script.google.com/macros/s/AKfycbxVDXw9K85aL5L_gyKSwi2UCiZHl-MeBfw0MnXI0VImhm91yeVo9itMUyaOuxnQCcaX/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    id: id,            // ID Player dari input
+    kode: selected.kode // kode produk dari Firebase
+  })
+})
+.then(res => res.json())
+.then(res => {
+  if (res.result === true || res.status === "success") {
+    transaksiRef.update({ status: "sukses", respon: res });
+    alert("Topup berhasil dikirim!");
+  } else {
+    transaksiRef.update({ status: "gagal", respon: res });
+    alert("Topup gagal: " + (res.message || "Error"));
+  }
+})
+.catch(err => {
+  transaksiRef.update({ status: "error", error: err.toString() });
+  alert("Gagal menghubungi server.");
+});
 
       tutupKonfirmasi();
-    }
+    
 
     tampilkanProduk();
   </script>
