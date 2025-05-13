@@ -118,7 +118,7 @@
         waktu: new Date().toISOString()
       });
 
-      fetch('/api/orderff', {
+      fetch('https://ws-backend.vercel.app/api/orderff', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kode: selected.kode, id })
