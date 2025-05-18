@@ -1,1 +1,117 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Deposit Manual - Warung Zero</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9f9ff;
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+    }
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #6a0dad;
+    }
+    label {
+      margin-top: 1rem;
+      display: block;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 0.3rem;
+    }
+    .qris-img {
+      width: 100%;
+      margin: 1.5rem 0;
+      border-radius: 12px;
+    }
+    .btn {
+      margin-top: 1.5rem;
+      width: 100%;
+      background: #6a0dad;
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #6a0dad;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Deposit via QRIS</h2>
+    <p style="text-align:center;">Scan QRIS di bawah ini</p>
+    <img class="qris-img" src="img/isi.jpg" alt="QRIS Image" />
+
+    <label for="jumlah">Jumlah Deposit (Rp)</label>
+    <input type="number" id="jumlah" placeholder="Masukkan nominal tanpa kode unik">
+
+    <div class="result" id="totalDisplay"></div>
+
+    <button class="btn" onclick="kirimWhatsApp()">Kirim Bukti Pembayaran</button>
+  </div>
+
+  <script>
+    const adminNo = "6285814422209"; // Ganti dengan nomor admin
+
+    function kirimWhatsApp() {
+      const jumlah = parseInt(document.getElementById("jumlah").value);
+      if (!jumlah || jumlah < 1000) return alert("Masukkan jumlah deposit minimal Rp 1.000");
+
+      const kodeUnik = Math.floor(100 + Math.random() * 900); // 3 digit unik
+      const total = jumlah + kodeUnik;
+      const user = firebase.auth().currentUser;
+
+      const pesan = `Halo admin, saya ingin melakukan deposit manual.\n\nNama: ${user?.email || 'user'}\nJumlah: Rp ${jumlah.toLocaleString()}\nKode Unik: ${kodeUnik}\nTotal Transfer: Rp ${total.toLocaleString()}\n\nSaya sudah melakukan pembayaran ke QRIS. Mohon dicek.`;
+
+      document.getElementById("totalDisplay").innerText = `Total Transfer: Rp ${total.toLocaleString()}`;
+
+      const encodedMsg = encodeURIComponent(pesan);
+      window.open(`https://wa.me/${adminNo}?text=${encodedMsg}`, "_blank");
+    }
+  </script>
+
+  <!-- Firebase SDK (jika belum ada di atas) -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+  <script>
+    // Firebase config Anda
+    const firebaseConfig = {
+      apiKey: "API_KEY",
+      authDomain: "PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://PROJECT_ID.firebaseio.com",
+      projectId: "PROJECT_ID",
+      storageBucket: "PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</body>
+</html>
