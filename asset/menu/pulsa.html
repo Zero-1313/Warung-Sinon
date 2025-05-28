@@ -1,14 +1,116 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Topup Pulsa</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f9f9ff; color: #333; }
+    header { background: #6a0dad; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; font-weight: bold; }
+    .container { max-width: 600px; margin: 2rem auto; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    label { font-weight: 600; margin-bottom: 0.4rem; display: block; }
+    input { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; }
+    .produk-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+    .produk-item { background: #f1effd; padding: 1rem; text-align: center; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+    .produk-item.active { background: #e3dbff; border-color: #6a0dad; transform: scale(1.03); }
+    .btn { margin-top: 1.5rem; padding: 1rem; background: #6a0dad; color: white; font-weight: bold; font-size: 1rem; border: none; width: 100%; border-radius: 10px; cursor: pointer; }
+  </style>
 </head>
-
 <body>
-  
-</body>
+  <header>Topup Pulsa</header>
+  <div class="container">
+    <label for="nomor">Nomor HP</label>
+    <input type="tel" id="nomor" placeholder="08xxxxxxxxxx" />
+    <div class="produk-list" id="produkList">Memuat produk...</div>
+    <button class="btn" onclick="prosesTopup()">Lanjutkan</button>
+  </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGtIGgcT5-WF74vuIuC11BQMNMb_S2BeY",
+      authDomain: "warung-sinon.firebaseapp.com",
+      databaseURL: "https://warung-sinon-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "warung-sinon",
+      storageBucket: "warung-sinon.appspot.com",
+      messagingSenderId: "130588032075",
+      appId: "1:130588032075:web:f38f328fb9b4a0820fa1ce"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    let selected = null;
+
+    function tampilkanProduk() {
+      const list = document.getElementById("produkList");
+      list.innerHTML = "Memuat...";
+      db.ref("produk/pulsa").once("value").then(snapshot => {
+        list.innerHTML = "";
+        snapshot.forEach(child => {
+          const data = child.val();
+          const div = document.createElement("div");
+          div.className = "produk-item";
+          div.innerHTML = `<div>${data.nama}</div><small>Rp ${data.harga.toLocaleString()}</small>`;
+          div.onclick = () => {
+            document.querySelectorAll(".produk-item").forEach(p => p.classList.remove("active"));
+            div.classList.add("active");
+            selected = data;
+          };
+          list.appendChild(div);
+        });
+      });
+    }
+
+    async function prosesTopup() {
+      const nomor = document.getElementById("nomor").value.trim();
+      if (!nomor || !selected) return alert("Isi nomor dan pilih produk terlebih dahulu.");
+
+      const total = selected.harga + 1000;
+      const user = auth.currentUser;
+      if (!user) return alert("Silakan login terlebih dahulu.");
+
+      const transaksiRef = db.ref("transaksi_pulsa").push();
+
+      await transaksiRef.set({
+        uid: user.uid,
+        nomor,
+        operator: selected.operator || "-",
+        produk: selected.nama,
+        kode: selected.kode,
+        harga: selected.harga,
+        total,
+        status: "pending",
+        waktu: new Date().toISOString()
+      });
+
+      try {
+        const response = await fetch("/api/orderpulsa", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nomor: nomor, kode: selected.kode })
+        });
+
+        const hasil = await response.json();
+
+        if (hasil.success) {
+          await transaksiRef.update({ status: "sukses", response: hasil });
+          alert("Topup berhasil dikirim!");
+        } else {
+          await transaksiRef.update({ status: "gagal", response: hasil });
+          alert("Topup gagal: " + (hasil.message || "Error"));
+        }
+      } catch (err) {
+        await transaksiRef.update({ status: "error", error: err.message });
+        alert("Gagal menghubungi server.");
+      }
+    }
+
+    tampilkanProduk();
+  </script>
+</body>
 </html>
