@@ -5,143 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Topup Pulsa</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      background: #f9f9ff;
-      color: #333;
-    }
-    header {
-      background: #6a0dad;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .container {
-      max-width: 600px;
-      margin: 2rem auto;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-    .user-saldo {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-      color: #6a0dad;
-    }
-    label {
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      display: block;
-    }
-    input {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-    .operator {
-      margin-bottom: 1rem;
-      font-size: 1rem;
-      color: #6a0dad;
-    }
-    .pulsa-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 1rem;
-    }
-    .pulsa {
-      background: #f1effd;
-      text-align: center;
-      padding: 1rem;
-      border-radius: 10px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: 0.2s;
-    }
-    .pulsa.active {
-      border-color: #6a0dad;
-      background: #e3dbff;
-    }
-    .btn {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background: #6a0dad;
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
-      border: none;
-      width: 100%;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .popup {
-      position: fixed;
-      bottom: -100%;
-      left: 0;
-      width: 100%;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 20px 20px 0 0;
-      box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
-      transition: 0.3s;
-      z-index: 10;
-    }
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f9f9ff; color: #333; }
+    header { background: #6a0dad; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; font-weight: bold; }
+    .container { max-width: 600px; margin: 2rem auto; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .user-saldo { text-align: center; margin-bottom: 1rem; font-size: 1rem; color: #6a0dad; }
+    label { font-weight: 600; margin-bottom: 0.4rem; display: block; }
+    input { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; }
+    .produk-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+    .produk-item { background: #f1effd; padding: 1rem; text-align: center; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+    .produk-item.active { background: #e3dbff; border-color: #6a0dad; transform: scale(1.03); }
+    .btn { margin-top: 1rem; padding: 1rem; background: #6a0dad; color: white; font-weight: bold; font-size: 1rem; border: none; width: 100%; border-radius: 10px; cursor: pointer; }
+    .popup { position: fixed; bottom: -100%; left: 0; width: 100%; background: white; padding: 1.5rem; border-radius: 20px 20px 0 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.1); transition: 0.3s; z-index: 10; }
     .popup.active { bottom: 0; }
     .popup h3 { margin-top: 0; color: #6a0dad; }
     .popup p { margin: 0.5rem 0; }
-    .confirm-btn {
-      margin-top: 1.2rem;
-      padding: 0.8rem;
-      background: #6a0dad;
-      color: white;
-      border: none;
-      width: 100%;
-      font-weight: bold;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .close-btn {
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
-      font-size: 1.5rem;
-      background: none;
-      border: none;
-      color: #999;
-      cursor: pointer;
-    }
+    .close-btn { position: absolute; right: 1rem; top: 1rem; font-size: 1.5rem; background: none; border: none; color: #999; cursor: pointer; }
   </style>
 </head>
 <body>
   <header>Topup Pulsa</header>
   <div class="container">
-    <div class="user-saldo">
-      <strong>Saldo Anda:</strong> <span id="userSaldo">Rp 0</span>
-    </div>
+    <!---
+    <div class="user-saldo"><strong>Saldo Anda:</strong> <span id="userSaldo">Rp 0</span></div>
+    -->
     <label for="nomor">Nomor HP</label>
     <input type="tel" id="nomor" placeholder="08xxxxxxxxxx" oninput="deteksiOperator()" />
-    <div class="operator" id="operator">Operator: -</div>
-    <div class="pulsa-list" id="pulsaList">Memuat produk...</div>
+    <div class="produk-list" id="produkList">Memuat produk...</div>
     <button class="btn" onclick="bukaKonfirmasi()">Lanjutkan</button>
   </div>
 
+  <!-- Popup Konfirmasi -->
   <div class="popup" id="popup">
     <button class="close-btn" onclick="tutupKonfirmasi()">×</button>
-    <h3>Konfirmasi Pulsa</h3>
+    <h3>Konfirmasi Topup</h3>
     <p><strong>Nomor:</strong> <span id="konfNomor"></span></p>
-    <p><strong>Operator:</strong> <span id="konfOp"></span></p>
-    <p><strong>Nominal:</strong> <span id="konfProduk"></span></p>
+    <p><strong>Produk:</strong> <span id="konfProduk"></span></p>
     <p><strong>Harga:</strong> <span id="konfHarga"></span></p>
-    <p><strong>Biaya Admin:</strong> Rp 1.000</p>
+    <p><strong>Admin:</strong> Rp 500<span id="konfAdmin"></span></p>
     <p><strong>Total:</strong> <span id="konfTotal"></span></p>
-    <button class="confirm-btn" onclick="prosesTopup()">Konfirmasi</button>
+    <button class="btn" onclick="prosesTopup()">Konfirmasi</button>
   </div>
 
   <!-- Firebase SDK -->
@@ -165,30 +67,45 @@
 
     let selected = null;
     let operator = "-";
+    let userSaldo = 0;
+
+    auth.onAuthStateChanged(user => {
+      if (!user) return window.location.href = "../login.html";
+      db.ref("users/" + user.uid).once("value").then(snapshot => {
+        const data = snapshot.val();
+        if (data && typeof data.saldo === "number") {
+          userSaldo = data.saldo;
+          document.getElementById("userSaldo").textContent = "Rp " + userSaldo.toLocaleString();
+        }
+      });
+    });
 
     function deteksiOperator() {
-      const nomor = document.getElementById("nomor").value;
-      operator = "Tidak dikenal";
-      if (/^08(11|12|13|21)/.test(nomor)) operator = "Telkomsel";
-      else if (/^08(58|56|15)/.test(nomor)) operator = "Indosat";
-      else if (/^08(31|38)/.test(nomor)) operator = "Xsis";
-      document.getElementById("operator").textContent = "Operator: " + operator;
+      const nomor = document.getElementById("nomor").value.trim();
+      if (nomor.startsWith("0811") || nomor.startsWith("0812") || nomor.startsWith("0813")) operator = "Telkomsel";
+      else if (nomor.startsWith("0857") || nomor.startsWith("0858") || nomor.startsWith("0815") || nomor.startsWith("0816")) operator = "Indosat";
+      else if (nomor.startsWith("0878") || nomor.startsWith("0877") || nomor.startsWith("0817")) operator = "XL";
+      else if (nomor.startsWith("0838") || nomor.startsWith("0831")) operator = "Axis";
+      else if (nomor.startsWith("0896") || nomor.startsWith("0895")) operator = "Tri";
+      else if (nomor.startsWith("0881") || nomor.startsWith("0882")) operator = "Smartfren";
+      else operator = "-";
+
       tampilkanProduk(operator);
     }
 
     function tampilkanProduk(op) {
-      const list = document.getElementById("pulsaList");
+      const list = document.getElementById("produkList");
       list.innerHTML = "Memuat...";
       db.ref("produk/pulsa").once("value").then(snapshot => {
         list.innerHTML = "";
         snapshot.forEach(child => {
           const data = child.val();
-          if (data.nama.includes(op)) {
+          if (data.operator === op) {
             const div = document.createElement("div");
-            div.className = "pulsa";
+            div.className = "produk-item";
             div.innerHTML = `<div>${data.nama}</div><small>Rp ${data.harga.toLocaleString()}</small>`;
             div.onclick = () => {
-              document.querySelectorAll(".pulsa").forEach(p => p.classList.remove("active"));
+              document.querySelectorAll(".produk-item").forEach(p => p.classList.remove("active"));
               div.classList.add("active");
               selected = data;
             };
@@ -200,12 +117,10 @@
 
     function bukaKonfirmasi() {
       const nomor = document.getElementById("nomor").value.trim();
-      if (!/^08[0-9]{8,12}$/.test(nomor)) return alert("Nomor HP tidak valid.");
-      if (!selected || operator === "Tidak dikenal") return alert("Pilih produk pulsa.");
-
-      const total = selected.harga + 1000;
+      if (!nomor || !selected || operator === "-") return alert("Isi nomor dan pilih produk.");
+      const total = selected.harga + 500;
+      if (userSaldo < total) return alert("Saldo tidak cukup.");
       document.getElementById("konfNomor").innerText = nomor;
-      document.getElementById("konfOp").innerText = operator;
       document.getElementById("konfProduk").innerText = selected.nama;
       document.getElementById("konfHarga").innerText = "Rp " + selected.harga.toLocaleString();
       document.getElementById("konfTotal").innerText = "Rp " + total.toLocaleString();
@@ -216,29 +131,23 @@
       document.getElementById("popup").classList.remove("active");
     }
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        db.ref("users/" + user.uid).once("value").then(snapshot => {
-          const data = snapshot.val();
-          if (data && data.saldo !== undefined) {
-            document.getElementById("userSaldo").textContent = "Rp " + data.saldo.toLocaleString();
-          }
-        });
-      } else {
-        window.location.href = "../index.html";
-      }
-    });
-
     async function prosesTopup() {
       const nomor = document.getElementById("nomor").value.trim();
       if (!nomor || !selected) return alert("Lengkapi data.");
-
       const user = auth.currentUser;
       if (!user) return alert("Silakan login.");
+      const total = selected.harga + 500;
 
-      const total = selected.harga + 1000;
+      const userRef = db.ref("users/" + user.uid);
+      const snapshot = await userRef.once("value");
+      const data = snapshot.val();
+      if (!data || typeof data.saldo !== "number" || data.saldo < total) {
+        return alert("Saldo tidak mencukupi.");
+      }
+
+      await userRef.update({ saldo: data.saldo - total });
+
       const transaksiRef = db.ref("transaksi_pulsa").push();
-
       await transaksiRef.set({
         uid: user.uid,
         nomor,
@@ -252,30 +161,24 @@
       });
 
       try {
-        const res = await fetch("/api/orderpulsa", {
+        await fetch("https://api.fonnte.com/send", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nomor: nomor, kode: selected.kode })
+          headers: {
+            Authorization: "Mbg9qMgsNtEZiZYqfi7a"
+          },
+          body: new URLSearchParams({
+            target: "6285814422209",
+            message: `📥 PESANAN PULSA\nNomor: ${nomor}\nProduk: ${selected.nama}\nHarga: Rp ${selected.harga.toLocaleString()}\nStatus: PENDING`
+          })
         });
-
-        const result = await res.json();
-
-        if (result.result === true || result.status === "success") {
-          transaksiRef.update({ status: "sukses", response: result });
-          alert("Topup berhasil!");
-        } else {
-          transaksiRef.update({ status: "gagal", response: result });
-          alert("Topup gagal: " + (result.message || "Terjadi kesalahan"));
-        }
+        alert("Transaksi berhasil dikirim.");
       } catch (err) {
-        transaksiRef.update({ status: "error", error: err.message });
-        alert("Gagal menghubungi server backend.");
+        alert("WA gagal, tapi transaksi tersimpan.");
       }
 
       tutupKonfirmasi();
     }
 
-    // Load produk saat halaman dimuat
     tampilkanProduk();
   </script>
 </body>
