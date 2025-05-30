@@ -70,7 +70,7 @@
     let userSaldo = 0;
 
     auth.onAuthStateChanged(user => {
-      if (!user) return window.location.href = "../login.html";
+      if (!user) return window.location.href = "../index.html";
       db.ref("users/" + user.uid).once("value").then(snapshot => {
         const data = snapshot.val();
         if (data && typeof data.saldo === "number") {
@@ -83,7 +83,7 @@
     function deteksiOperator() {
       const nomor = document.getElementById("nomor").value.trim();
       if (nomor.startsWith("0811") || nomor.startsWith("0812") || nomor.startsWith("0813")) operator = "Telkomsel";
-      else if (nomor.startsWith("0857") || nomor.startsWith("0858") || nomor.startsWith("0815") || nomor.startsWith("0816")) operator = "Indosat";
+      else if (nomor.startsWith("0856") || nomor.startsWith("0858") || nomor.startsWith("0815") || nomor.startsWith("0855")) operator = "Indosat";
       else if (nomor.startsWith("0878") || nomor.startsWith("0877") || nomor.startsWith("0817")) operator = "XL";
       else if (nomor.startsWith("0838") || nomor.startsWith("0831")) operator = "Axis";
       else if (nomor.startsWith("0896") || nomor.startsWith("0895")) operator = "Tri";
@@ -173,7 +173,7 @@
         });
         alert("Transaksi berhasil dikirim.");
       } catch (err) {
-        alert("WA gagal, tapi transaksi tersimpan.");
+        alert("Transaksi gagal, tapi transaksi tersimpan dengan status panding!");
       }
 
       tutupKonfirmasi();
