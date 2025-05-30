@@ -37,6 +37,7 @@
     <p><strong>ID:</strong> <span id="konfId"></span></p>
     <p><strong>Produk:</strong> <span id="konfNama"></span></p>
     <p><strong>Harga:</strong> <span id="konfHarga"></span></p>
+    <p><strong>Biaya Admin:</strong> <span id="konfAdmin">Rp 1.000</span></p>
     <p><strong>Total:</strong> <span id="konfTotal"></span></p>
     <button onclick="prosesTopup()">Konfirmasi</button>
     <button onclick="tutupKonfirmasi()">Batal</button>
@@ -86,7 +87,6 @@
     function bukaKonfirmasi() {
       const id = document.getElementById('playerId').value.trim();
       if (!id || !selected) return alert('Isi ID dan pilih produk.');
-
       const total = selected.harga + 1000;
       document.getElementById('konfId').innerText = id;
       document.getElementById('konfNama').innerText = selected.nama;
@@ -99,15 +99,32 @@
       document.getElementById('popup').classList.remove('active');
     }
 
-    // Ganti bagian ini di fungsi prosesTopup()
-async function prosesTopup() {
+    async function prosesTopup() {
   const user = auth.currentUser;
   if (!user) return alert("Silakan login.");
   
   const id = document.getElementById("playerId").value.trim();
-  const total = selected.harga + 1000;
-  const transaksiRef = db.ref("transaksi_game").push();
+  if (!id || !selected) return alert("Lengkapi ID dan pilih produk.");
   
+  const total = selected.harga + 1000;
+  const userRef = db.ref("users/" + user.uid);
+  
+  const snapshot = await userRef.once("value");
+  const data = snapshot.val();
+  
+  if (!data || typeof data.saldo !== "number") {
+    return alert("Data saldo tidak ditemukan.");
+  }
+  
+  if (data.saldo < total) {
+    return alert("Saldo tidak mencukupi untuk melakukan topup.");
+  }
+  
+  // Kurangi saldo pengguna
+  await userRef.update({ saldo: data.saldo - total });
+  
+  // Simpan transaksi
+  const transaksiRef = db.ref("transaksi_game").push();
   await transaksiRef.set({
     uid: user.uid,
     id,
@@ -115,16 +132,35 @@ async function prosesTopup() {
     kode: selected.kode,
     harga: selected.harga,
     total,
-    status: "pending", // admin akan ubah ke sukses/gagal
+    status: "pending",
     waktu: new Date().toISOString()
   });
   
-  alert("Permintaan Terkirim!");
+  // Kirim notifikasi ke admin lewat Fonnte
+  try {
+    try {
+  await fetch("/api/orderff", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      id: id,
+      produk: selected.nama,
+      harga: selected.harga,
+      total: total
+    })
+  });
+    
+    alert("Topup berhasil dikirim, saldo kamu sudah dikurangi.");
+  } catch (err) {
+    alert("Gagal kirim notifikasi, tapi transaksi tetap dicatat sebagai pending!");
+  }
+  
   tutupKonfirmasi();
 }
 
-    // Jalankan saat halaman pertama kali dimuat
     tampilkanProduk();
   </script>
 </body>
-                                               </html>
+</html>
