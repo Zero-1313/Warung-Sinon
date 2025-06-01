@@ -37,7 +37,7 @@
     <p><strong>ID:</strong> <span id="konfId"></span></p>
     <p><strong>Produk:</strong> <span id="konfNama"></span></p>
     <p><strong>Harga:</strong> <span id="konfHarga"></span></p>
-    <p><strong>Biaya Admin:</strong> <span id="konfAdmin">Rp 1.000</span></p>
+    <p><strong>Biaya Admin:</strong> <span id="konfAdmin">Rp 500</span></p>
     <p><strong>Total:</strong> <span id="konfTotal"></span></p>
     <button onclick="prosesTopup()">Konfirmasi</button>
     <button onclick="tutupKonfirmasi()">Batal</button>
@@ -67,7 +67,7 @@
     function tampilkanProduk() {
       const list = document.getElementById('produkList');
       list.innerHTML = 'Memuat...';
-      db.ref('produk/game').once('value').then(snapshot => {
+      db.ref('produk/game/ff').once('value').then(snapshot => {
         list.innerHTML = '';
         snapshot.forEach(child => {
           const data = child.val();
@@ -106,7 +106,7 @@
   const id = document.getElementById("playerId").value.trim();
   if (!id || !selected) return alert("Lengkapi ID dan pilih produk.");
   
-  const total = selected.harga + 1000;
+  const total = selected.harga + 500;
   const userRef = db.ref("users/" + user.uid);
   
   const snapshot = await userRef.once("value");
@@ -138,23 +138,20 @@
   
   // Kirim notifikasi ke admin lewat Fonnte
   try {
-    try {
-  await fetch("/api/orderff", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      id: id,
-      produk: selected.nama,
-      harga: selected.harga,
-      total: total
-    })
-  });
+    await fetch("https://api.fonnte.com/send", {
+      method: "POST",
+      headers: {
+        Authorization: "Mbg9qMgsNtEZiZYqfi7a" // Ganti dengan API Key kamu
+      },
+      body: new URLSearchParams({
+        target: "6285814422209", // Ganti dengan nomor WA admin
+        message: `📥 PESANAN TOPUP FF\nID: ${id}\nProduk: ${selected.nama}\nHarga: Rp ${selected.harga.toLocaleString()}\nTotal: Rp ${total.toLocaleString()}\nStatus: PENDING`
+      })
+    });
     
     alert("Topup berhasil dikirim, saldo kamu sudah dikurangi.");
   } catch (err) {
-    alert("Gagal kirim notifikasi, tapi transaksi tetap dicatat sebagai pending!");
+    alert("Gagal kirim notifikasi, tapi transaksi tetap dicatat sebagai pending");
   }
   
   tutupKonfirmasi();
