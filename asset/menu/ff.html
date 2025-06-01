@@ -87,7 +87,7 @@
     function bukaKonfirmasi() {
       const id = document.getElementById('playerId').value.trim();
       if (!id || !selected) return alert('Isi ID dan pilih produk.');
-      const total = selected.harga + 1000;
+      const total = selected.harga + 500;
       document.getElementById('konfId').innerText = id;
       document.getElementById('konfNama').innerText = selected.nama;
       document.getElementById('konfHarga').innerText = "Rp " + selected.harga.toLocaleString();
