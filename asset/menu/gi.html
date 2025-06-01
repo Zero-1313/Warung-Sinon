@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Topup Genshin Impact</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { margin: 0; background: #f9f9ff; color: #333; }
+    header { background: #6a0dad; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; font-weight: bold; }
+    .container { max-width: 600px; margin: 2rem auto; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+    .input-group { display: flex; gap: 1rem; align-items: flex-end; }
+    .input-box { flex: 1; }
+    label { font-weight: 600; display: block; margin-bottom: 0.3rem; }
+    input, select { width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
+
+    .produk-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .produk-item { background: #f1effd; padding: 1rem; text-align: center; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+    .produk-item.active { background: #e3dbff; border-color: #6a0dad; transform: scale(1.03); }
+    .btn { width: 100%; margin-top: 1.5rem; padding: 1rem; background: #6a0dad; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+    .popup { position: fixed; bottom: -100%; left: 0; width: 100%; background: white; padding: 2rem; border-radius: 20px 20px 0 0; transition: 0.3s ease; box-shadow: 0 -8px 20px rgba(0,0,0,0.1); z-index: 100; }
+    .popup.active { bottom: 0; }
+    .popup h3 { margin-top: 0; color: #6a0dad; text-align: center; }
+    .popup p { margin: 0.5rem 0; }
+    .popup button { margin-top: 1rem; width: 100%; padding: 0.8rem; background: #6a0dad; color: white; border: none; border-radius: 8px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>Topup Genshin Impact</header>
+  <div class="container">
+    <div class="input-group">
+      <div class="input-box">
+        <label for="playerId">UID</label>
+        <input type="text" id="playerId" placeholder="Contoh: 800123456" />
+      </div>
+      <div class="input-box" style="max-width: 160px;">
+        <label for="server">Server</label>
+        <select id="server">
+          <option value="">Pilih Server</option>
+          <option value="Asia">Asia</option>
+          <option value="America">America</option>
+          <option value="Europe">Europe</option>
+          <option value="TW, HK, MO">TW, HK, MO</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="produk-list" id="produkList">Memuat produk...</div>
+    <button class="btn" onclick="bukaKonfirmasi()">Lanjutkan</button>
+  </div>
+
+  <div class="popup" id="popup">
+    <h3>Konfirmasi Topup</h3>
+    <p><strong>UID:</strong> <span id="konfId"></span></p>
+    <p><strong>Server:</strong> <span id="konfServer"></span></p>
+    <p><strong>Produk:</strong> <span id="konfNama"></span></p>
+    <p><strong>Harga:</strong> <span id="konfHarga"></span></p>
+    <p><strong>Biaya Admin:</strong> <span id="konfAdmin">Rp 500</span></p>
+    <p><strong>Total:</strong> <span id="konfTotal"></span></p>
+    <button onclick="prosesTopup()">Konfirmasi</button>
+    <button onclick="tutupKonfirmasi()">Batal</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGtIGgcT5-WF74vuIuC11BQMNMb_S2BeY",
+      authDomain: "warung-sinon.firebaseapp.com",
+      databaseURL: "https://warung-sinon-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "warung-sinon",
+      storageBucket: "warung-sinon.appspot.com",
+      messagingSenderId: "130588032075",
+      appId: "1:130588032075:web:f38f328fb9b4a0820fa1ce"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    let selected = null;
+    let userSaldo = 0;
+
+    auth.onAuthStateChanged(user => {
+      if (!user) return window.location.href = "../index.html";
+      db.ref("users/" + user.uid).once("value").then(snap => {
+        const data = snap.val();
+        if (data?.saldo) userSaldo = data.saldo;
+      });
+    });
+
+    function tampilkanProduk() {
+      const list = document.getElementById('produkList');
+      list.innerHTML = 'Memuat...';
+      db.ref('produk/game/genshin').once('value').then(snapshot => {
+        list.innerHTML = '';
+        snapshot.forEach(child => {
+          const data = child.val();
+          const div = document.createElement('div');
+          div.className = 'produk-item';
+          div.innerHTML = `<div>${data.nama}</div><small>Rp ${data.harga.toLocaleString()}</small>`;
+          div.onclick = () => {
+            document.querySelectorAll('.produk-item').forEach(p => p.classList.remove('active'));
+            div.classList.add('active');
+            selected = data;
+          };
+          list.appendChild(div);
+        });
+      });
+    }
+
+    function bukaKonfirmasi() {
+      const id = document.getElementById('playerId').value.trim();
+      const server = document.getElementById('server').value.trim();
+      if (!id || !server || !selected) return alert('Isi UID, server, dan pilih produk.');
+      const total = selected.harga + 500;
+      if (userSaldo < total) return alert("Saldo tidak mencukupi.");
+      document.getElementById('konfId').innerText = id;
+      document.getElementById('konfServer').innerText = server;
+      document.getElementById('konfNama').innerText = selected.nama;
+      document.getElementById('konfHarga').innerText = "Rp " + selected.harga.toLocaleString();
+      document.getElementById('konfTotal').innerText = "Rp " + total.toLocaleString();
+      document.getElementById('popup').classList.add('active');
+    }
+
+    function tutupKonfirmasi() {
+      document.getElementById('popup').classList.remove('active');
+    }
+
+    async function prosesTopup() {
+      const user = auth.currentUser;
+      if (!user) return alert("Silakan login.");
+
+      const id = document.getElementById("playerId").value.trim();
+      const server = document.getElementById("server").value.trim();
+      const total = selected.harga + 500;
+
+      const userRef = db.ref("users/" + user.uid);
+      const snap = await userRef.once("value");
+      const data = snap.val();
+
+      if (!data || typeof data.saldo !== "number" || data.saldo < total) {
+        return alert("Saldo tidak cukup.");
+      }
+
+      await userRef.update({ saldo: data.saldo - total });
+
+      const transaksiRef = db.ref("transaksi_game").push();
+      await transaksiRef.set({
+        uid: user.uid,
+        id,
+        server,
+        produk: selected.nama,
+        kode: selected.kode,
+        harga: selected.harga,
+        total,
+        kategori: "GENSHIN",
+        status: "pending",
+        waktu: new Date().toISOString()
+      });
+
+      try {
+        await fetch("https://api.fonnte.com/send", {
+      method: "POST",
+      headers: {
+        Authorization: "Mbg9qMgsNtEZiZYqfi7a" // Ganti dengan API Key kamu
+      },
+      body: new URLSearchParams({
+            target: "6285814422209",
+            message: `📥 TOPUP GENSHIN\nUID: ${id}\nServer: ${server}\nProduk: ${selected.nama}\nHarga: Rp ${selected.harga.toLocaleString()}\nTotal: Rp ${total.toLocaleString()}\nStatus: PENDING`
+          })
+        });
+        alert("Topup berhasil dikirim. Saldo kamu sudah dikurangi.");
+      } catch (err) {
+        alert("Gagal kirim notifikasi, tapi transaksi tetap dicatat.");
+      }
+
+      tutupKonfirmasi();
+    }
+
+    tampilkanProduk();
+  </script>
+</body>
+</html>
