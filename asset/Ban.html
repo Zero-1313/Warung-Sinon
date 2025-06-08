@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Warung Zero Maintenance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background: linear-gradient(to right, #2d00f7, #6a00f4);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+    .countdown {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: rgba(255,255,255,0.1);
+      padding: 0.8rem 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Warung Zero Sedang Dalam Perbaikan</h1>
+  <h2>Kami akan kembali pada <strong>10 Juni, pukul 10:00 WIB</strong><br>Mohon bersabar ya!</h2>
+  <div class="countdown" id="countdown">Menghitung waktu kembali...</div>
+  <div class="footer">Versi 0.1 Beta | Dikelola oleh Sinon Dev</div>
+
+  <script>
+    const targetDate = new Date("2025-06-10T10:00:00+07:00");
+
+    function updateCountdown() {
+      const now = new Date();
+      const selisih = targetDate - now;
+
+      if (selisih <= 0) {
+        document.getElementById("countdown").textContent = "Warung Zero telah kembali online!";
+        return;
+      }
+
+      const hari = Math.floor(selisih / (1000 * 60 * 60 * 24));
+      const jam = Math.floor((selisih / (1000 * 60 * 60)) % 24);
+      const menit = Math.floor((selisih / (1000 * 60)) % 60);
+      const detik = Math.floor((selisih / 1000) % 60);
+
+      document.getElementById("countdown").textContent =
+        `${hari} hari ${jam} jam ${menit} menit ${detik} detik`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
