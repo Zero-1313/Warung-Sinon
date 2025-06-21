@@ -1,117 +1,259 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Deposit Manual - Warung Zero</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isi Saldo - Warung Zero</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: #f9f9ff;
-      margin: 0;
-      padding: 2rem;
-      color: #333;
-    }
-    .container {
-      max-width: 480px;
-      margin: auto;
-      background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #6a0dad;
-    }
-    label {
-      margin-top: 1rem;
-      display: block;
-      font-weight: bold;
-    }
-    input {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-top: 0.3rem;
-    }
-    .qris-img {
-      width: 100%;
-      margin: 1.5rem 0;
-      border-radius: 12px;
-    }
-    .btn {
-      margin-top: 1.5rem;
-      width: 100%;
-      background: #6a0dad;
+      background: linear-gradient(to right, #8e2de2, #4a00e0);
       color: white;
-      border: none;
-      padding: 1rem;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    select, input {
+      padding: 12px;
+      margin: 10px 0;
       border-radius: 10px;
-      font-size: 1rem;
+      border: none;
+      width: 90%;
+      max-width: 300px;
+      font-size: 16px;
+    }
+
+    .info {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .info p {
+      margin: 8px 0;
+    }
+
+    .qris-img {
+  margin-top: 20px;
+  width: 80%;
+  max-width: 360px;
+  display: none;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+    button {
+      margin-top: 20px;
+      padding: 12px 30px;
+      background: white;
+      color: #8e2de2;
+      border: none;
+      border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
     }
-    .result {
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #6a0dad;
-      text-align: center;
+
+    .notif {
+      margin-top: 15px;
+      background-color: rgba(255,255,255,0.15);
+      padding: 10px;
+      border-radius: 10px;
+      display: none;
     }
+    
+    .back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.2);
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.back-button:hover {
+  background: rgba(255,255,255,0.35);
+}
+    
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Deposit via QRIS</h2>
-    <p style="text-align:center;">Scan QRIS di bawah ini</p>
-    <img class="qris-img" src="img/isi.jpg" alt="QRIS Image" />
 
-    <label for="jumlah">Jumlah Deposit (Rp)</label>
-    <input type="number" id="jumlah" placeholder="Masukkan nominal tanpa kode unik">
+<div class="back-button" onclick="window.location.href='dasbord.html'">← Kembali</div>
 
-    <div class="result" id="totalDisplay"></div>
+  <h1>ISI SALDO</h1>
 
-    <button class="btn" onclick="kirimWhatsApp()">Kirim Bukti Pembayaran</button>
+  <select id="metode" onchange="updateInfo()">
+    <option value="">-- Pilih Metode --</option>
+    <option value="dana">DANA</option>
+    <option value="ovo">OVO</option>
+    <option value="qris">QRIS</option>
+  </select>
+
+  <input type="number" id="nominal" placeholder="Masukkan nominal (tanpa kode unik)" oninput="updateInfo()" />
+
+  <div class="info" id="infoBox">
+    <p><strong>Nomor:</strong> <span id="nomor"></span></p>
+    <p><strong>Atas Nama:</strong> <span id="an"></span></p>
+    <p><strong>Kode Unik:</strong> <span id="kodeUnik"></span></p>
+    <p><strong>Total Transfer:</strong> Rp <span id="total"></span></p>
+    <img src="" id="qrisImg" class="qris-img" />
+    <button onclick="kirimSaldo()">submit</button>
   </div>
 
-  <script>
-    const adminNo = "6285814422209"; // Ganti dengan nomor admin
+  <div class="notif" id="notifBox">✅ Notifikasi berhasil dikirim ke Admin.</div>
 
-    function kirimWhatsApp() {
-      const jumlah = parseInt(document.getElementById("jumlah").value);
-      if (!jumlah || jumlah < 1000) return alert("Masukkan jumlah deposit minimal Rp 1.000");
-
-      const kodeUnik = Math.floor(100 + Math.random() * 900); // 3 digit unik
-      const total = jumlah + kodeUnik;
-      const user = firebase.auth().currentUser;
-
-      const pesan = `Halo admin, saya ingin melakukan deposit manual.\n\nNama: ${user?.email || 'user'}\nJumlah: Rp ${jumlah.toLocaleString()}\nKode Unik: ${kodeUnik}\nTotal Transfer: Rp ${total.toLocaleString()}\n\nSaya sudah melakukan pembayaran ke QRIS. Mohon dicek.`;
-
-      document.getElementById("totalDisplay").innerText = `Total Transfer: Rp ${total.toLocaleString()}`;
-
-      const encodedMsg = encodeURIComponent(pesan);
-      window.open(`https://wa.me/${adminNo}?text=${encodedMsg}`, "_blank");
-    }
-  </script>
-
-  <!-- Firebase SDK (jika belum ada di atas) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+
   <script>
-    // Firebase config Anda
     const firebaseConfig = {
-      apiKey: "API_KEY",
-      authDomain: "PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://PROJECT_ID.firebaseio.com",
-      projectId: "PROJECT_ID",
-      storageBucket: "PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID"
+      apiKey: "AIzaSyCGtIGgcT5-WF74vuIuC11BQMNMb_S2BeY",
+      authDomain: "warung-sinon.firebaseapp.com",
+      databaseURL: "https://warung-sinon-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "warung-sinon",
     };
     firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    const dataRekening = {
+      dana: { nomor: "085814422209", an: "SUTIHAT" },
+      ovo: { nomor: "085814422209", an: "SUTIHAT" },
+      qris: {
+        nomor: "-",
+        an: "Warung Zero",
+        qrisUrl: "img/isi.jpg"
+      }
+    };
+
+    let kodeUnik = 0;
+    let totalTransfer = 0;
+
+    function generateKodeUnik() {
+      return Math.floor(100 + Math.random() * 900);
+    }
+
+    function updateInfo() {
+      const metode = document.getElementById('metode').value;
+      const nominal = parseInt(document.getElementById('nominal').value) || 0;
+      const infoBox = document.getElementById('infoBox');
+      const qrisImg = document.getElementById('qrisImg');
+
+      if (!metode || nominal <= 0) {
+        infoBox.style.display = 'none';
+        return;
+      }
+
+      const data = dataRekening[metode];
+      kodeUnik = generateKodeUnik();
+      totalTransfer = nominal + kodeUnik;
+
+      document.getElementById('nomor').innerText = data.nomor;
+      document.getElementById('an').innerText = data.an;
+      document.getElementById('kodeUnik').innerText = kodeUnik;
+      document.getElementById('total').innerText = totalTransfer.toLocaleString();
+
+      infoBox.style.display = 'block';
+
+      if (metode === 'qris') {
+        qrisImg.src = data.qrisUrl;
+        qrisImg.style.display = 'block';
+      } else {
+        qrisImg.style.display = 'none';
+      }
+    }
+
+    async function kirimSaldo() {
+      const metode = document.getElementById('metode').value;
+      const nominal = parseInt(document.getElementById('nominal').value) || 0;
+      if (!metode || nominal <= 0) return alert("Isi semua data dulu.");
+
+      const user = auth.currentUser;
+      if (!user) return alert("Kamu belum login.");
+
+      // ✅ CEK SPAM: hanya 1 transaksi status "menunggu" dalam 24 jam
+      const now = new Date();
+      const batasWaktu = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 jam
+
+      const snap = await db.ref("transaksi_saldo")
+        .orderByChild("uid")
+        .equalTo(user.uid)
+        .once("value");
+
+      let sudahAda = false;
+      snap.forEach(child => {
+        const data = child.val();
+        const waktu = new Date(data.waktu);
+        if (waktu > batasWaktu && data.status === "menunggu") {
+          sudahAda = true;
+        }
+      });
+
+      if (sudahAda) {
+        return alert("Kamu sudah melakukan isi saldo dalam 24 jam terakhir dan masih menunggu. Harap tunggu disetujui admin.");
+      }
+
+      const userSnap = await db.ref("users/" + user.uid).once("value");
+      const userData = userSnap.val();
+      const data = dataRekening[metode];
+
+      // Simpan ke Firebase
+      await db.ref("transaksi_saldo").push({
+        uid: user.uid,
+        nama: userData?.nama || "Tanpa Nama",
+        metode,
+        nominal,
+        kodeUnik,
+        total: totalTransfer,
+        nomor: data.nomor,
+        an: data.an,
+        status: "menunggu",
+        waktu: now.toISOString()
+      });
+
+      // Kirim WA ke admin via Fonnte
+      await fetch("https://api.fonnte.com/send", {
+        method: "POST",
+        headers: {
+          Authorization: "Mbg9qMgsNtEZiZYqfi7a", // GANTI DENGAN API KEY FONNTE
+        },
+        body: new URLSearchParams({
+          target: "6285814422209", // GANTI NOMOR ADMIN
+          message:
+`📥 ISI SALDO
+
+👤 User: ${userData?.nama || "Tanpa Nama"}
+💳 Metode: ${metode.toUpperCase()}
+🧾 Nominal: Rp ${nominal.toLocaleString()}
+🔢 Kode Unik: ${kodeUnik}
+💰 Total Transfer: Rp ${totalTransfer.toLocaleString()}
+📅 Waktu: ${now.toLocaleString()}
+
+Segera cek mutasi dan input saldo.`
+        })
+      });
+
+      document.getElementById('notifBox').style.display = 'block';
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (!user) window.location.href = "../index.html";
+    });
   </script>
+
 </body>
 </html>
