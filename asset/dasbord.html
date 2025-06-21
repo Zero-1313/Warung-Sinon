@@ -89,22 +89,36 @@
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 1rem;
     }
+    
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 1rem;
+    }
     .menu-item {
       background: white;
       padding: 1rem;
       border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: 0.3s;
     }
     .menu-item:hover {
       transform: scale(1.05);
+      background: #f0e9ff;
     }
     .menu-item img {
       width: 40px;
-      margin-bottom: 8px;
+      height: 40px;
+      margin-bottom: 0.5rem;
     }
+    .menu-item span {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
     .info-box {
       background: #f0ebff;
       border-left: 4px solid #6a0dad;
@@ -140,7 +154,7 @@
   <div class="side-menu" id="sideMenu">
     <div onclick="window.location.href='#'">Dashboard</div>
     <div onclick="window.location.href='menu/trx.html'">Riwayat Pembelian</div>
-    <div onclick="alert('Riwayat Pembelian')">Riwayat Deposit</div>
+    <div onclick="alert('Maaf Fitur Belum Siap!')">Riwayat Deposit</div>
     <div onclick="window.location.href='isi.html'">Isi Saldo</div>
     <div onclick="logout()">Logout</div>
   </div>
@@ -156,31 +170,40 @@
       </div>
     </div>
 
-    <div class="menu">
-      <div class="menu-item" onclick="window.location.href='menu/pulsa.html'">
-  <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Data">
-  Pulsa Reguler
+    <div class="menu-grid">
+  <div class="menu-item" onclick="window.location.href='menu/pulsa.html'">
+    <img src="https://img.icons8.com/ios-filled/50/000000/phone.png" alt="Pulsa">
+    <span>Pulsa</span>
+  </div>
+  <div class="menu-item" onclick="alert('Maaf Fitur Belum Siap!')">
+    <img src="https://img.icons8.com/ios-filled/50/000000/data-in-both-directions.png" alt="Data">
+    <span>Data</span>
+  </div>
+  <div class="menu-item" onclick="window.location.href='plih.html'">
+    <img src="https://img.icons8.com/ios-filled/50/000000/controller.png" alt="Game">
+    <span>Game</span>
+  </div>
+  <div class="menu-item" onclick="alert('Maaf Fitur Belum Siap!')">
+    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="E-Money">
+    <span>E-Money</span>
+  </div>
+  <div class="menu-item" onclick="alert('Maaf Fitur Belum Siap!')">
+    <img src="https://img.icons8.com/ios-filled/50/000000/android.png" alt="E-Money">
+    <span>APK Premium</span>
+  </div>
 </div>
-<div class="menu-item" onclick="window.location.href='plih.html'">
-  <img src="https://cdn-icons-png.flaticon.com/512/3514/3514643.png" alt="Game">
-  Topup Game
-</div>
-<div class="menu-item" onclick="alert('Maaf Fitur Belum Siap!')">
-  <img src="https://cdn-icons-png.flaticon.com/512/2344/2344063.png" alt="Transfer">
-  Ewalet
-</div>
-    </div>
+
+
 
     <div class="info-box">
       <big>📢 Pengumuman Rilis Versi 0.1 Beta</big>
       <br></br>
-      <small>1 Juni 2025</small>
+      <small>2p Juni 2025</small>
       <div id="infoRingkas">
-        Selamat datang di Warung Zero versi 0.1 Beta!
+        Selamat datang di Warung Zero versi 0.2 Beta!
       </div>
       <div id="infoLengkap" style="display:none; margin-top: 8px;">
-         Website versi 0.1 Beta sudah stabil dan siap digunakan untuk topup FF, ML, Genshin, serta pulsa Indosat, Axis, dan Tri; semua transaksi dikenakan biaya admin Rp500, proses maksimal 5 menit, tampilan dan fitur akan terus diperbarui, bug kecil mungkin masih ada.
-      </div>
+         Website versi 0.2 Beta sudah stabil dan siap digunakan untuk topup FF, ML, Genshin, serta pulsa Indosat, Axis, dan Tri; semua transaksi dikenakan biaya admin Rp500, proses 5-30 menit, tampilan dan fitur akan terus diperbarui, bug kecil mungkin masih ada,hanya user terpilih saja yang bisa melakukan demo aplikasi. </div>
       <button onclick="toggleInfo(event)">Selengkapnya</button>
     </div>
   </div>
