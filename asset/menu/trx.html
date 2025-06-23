@@ -1,123 +1,138 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Riwayat Transaksi - Warung Zero</title>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { margin: 0; background: #f8f7ff; color: #333; }header {
-  background: #6a0dad;
-  color: white;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  position: relative;
-}
+    body { margin: 0; background: #f8f7ff; color: #333; }
+    
+    header {
+      background: #6a0dad;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      position: relative;
+    }
 
-.menu-toggle {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
+    .menu-toggle {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
 
-.side-menu {
-  position: fixed;
-  top: 60px;
-  left: -250px;
-  height: calc(100% - 60px);
-  width: 250px;
-  background: white;
-  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  z-index: 100;
-  transition: left 0.3s ease;
-}
+    .side-menu {
+      position: fixed;
+      top: 60px;
+      left: -250px;
+      height: calc(100% - 60px);
+      width: 250px;
+      background: white;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      z-index: 100;
+      transition: left 0.3s ease;
+    }
 
-.side-menu.active { left: 0; }
-.side-menu div {
-  font-size: 16px;
-  color: #6a0dad;
-  cursor: pointer;
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
-}
+    .side-menu.active { left: 0; }
+    .side-menu div {
+      font-size: 16px;
+      color: #6a0dad;
+      cursor: pointer;
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.3);
-  display: none;
-  z-index: 50;
-}
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
+      display: none;
+      z-index: 50;
+    }
 
-.overlay.active { display: block; }
+    .overlay.active { display: block; }
 
-.container {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1rem;
-}
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
 
-.card {
-  background: white;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  border-left: 5px solid #6a0dad;
-}
+    .card {
+      background: white;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border-left: 5px solid #6a0dad;
+    }
 
-.card h4 {
-  margin: 0 0 0.5rem;
-  color: #6a0dad;
-}
+    .card h4 {
+      margin: 0 0 0.5rem;
+      color: #6a0dad;
+    }
 
-.card p {
-  margin: 0.2rem 0;
-  font-size: 0.95rem;
-}
+    .card p {
+      margin: 0.2rem 0;
+      font-size: 0.95rem;
+    }
 
-.status {
-  font-weight: bold;
-  margin-top: 0.5rem;
-  padding: 4px 8px;
-  display: inline-block;
-  border-radius: 5px;
-  font-size: 0.85rem;
-}
+    .status {
+      font-weight: bold;
+      margin-top: 0.5rem;
+      padding: 4px 8px;
+      display: inline-block;
+      border-radius: 5px;
+      font-size: 0.85rem;
+    }
 
-.status.pending { background: #fff3cd; color: #856404; }
-.status.sukses { background: #d4edda; color: #155724; }
-.status.gagal, .status.error { background: #f8d7da; color: #721c24; }
-
+    .status.pending { background: #fff3cd; color: #856404; }
+    .status.sukses { background: #d4edda; color: #155724; }
+    .status.gagal, .status.error { background: #f8d7da; color: #721c24; }
+    .status.selesai { background: #d1ecf1; color: #0c5460; }
   </style>
 </head>
 <body>
   <header>
     <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     Warung Zero
-  </header>  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+  </header>
+
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
   <div class="side-menu" id="sideMenu">
     <div onclick="window.location.href='../dasbord.html'">Dashboard</div>
-    <div onclick="window.location.href='riwayat.html'">Riwayat Transaksi</div>
-    <div onclick="window.location.href='deposit.html'">Riwayat Deposit</div>
-    <div onclick="window.location.href='topup.html'">Isi Saldo</div>
+    <div onclick="window.location.href='#'">Riwayat Transaksi</div>
+    <div onclick="alert('Maaf Fitur Belum Siap!')">Riwayat Deposit</div>
+    <div onclick="window.location.href='../isi.html'">Isi Saldo</div>
     <div onclick="logout()">Logout</div>
-  </div>  <div class="container" id="riwayatList">
+  </div>
+
+  <div class="container" id="riwayatList">
     <p>Memuat data transaksi...</p>
-  </div>  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>  <script>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCGtIGgcT5-WF74vuIuC11BQMNMb_S2BeY",
       authDomain: "warung-sinon.firebaseapp.com",
@@ -136,6 +151,10 @@
       document.getElementById("overlay").classList.toggle("active");
     }
 
+    function logout() {
+      auth.signOut().then(() => window.location.href = "../index.html");
+    }
+
     auth.onAuthStateChanged(async user => {
       const list = document.getElementById("riwayatList");
       list.innerHTML = "";
@@ -147,8 +166,9 @@
         db.ref("transaksi_aplikasi").orderByChild("uid").equalTo(user.uid)
       ];
 
-      const [pulsaSnap, gameSnap] = await Promise.all(refs.map(ref => ref.once("value")));
-      if (!pulsaSnap.exists() && !gameSnap.exists()) {
+      const [pulsaSnap, gameSnap, aplikasiSnap] = await Promise.all(refs.map(ref => ref.once("value")));
+
+      if (!pulsaSnap.exists() && !gameSnap.exists() && !aplikasiSnap.exists()) {
         list.innerHTML = "<p>Tidak ada transaksi ditemukan.</p>";
         return;
       }
@@ -160,7 +180,7 @@
           div.className = "card";
           div.innerHTML = `
             <h4>${trx.produk || tipe}</h4>
-            <p><strong>Nomor:</strong> ${trx.nomor || trx.id}</p>
+            <p><strong>Nomor:</strong> ${trx.nomor || trx.id || trx.email || "-"}</p>
             <p><strong>Total:</strong> Rp ${trx.total.toLocaleString()}</p>
             <p><strong>Tanggal:</strong> ${new Date(trx.waktu).toLocaleString()}</p>
             <div class="status ${trx.status}">Status: ${trx.status}</div>
@@ -171,10 +191,8 @@
 
       tampilkanTransaksi(pulsaSnap, 'Pulsa');
       tampilkanTransaksi(gameSnap, 'Game');
+      tampilkanTransaksi(aplikasiSnap, 'Aplikasi');
     });
-
-    function logout() {
-      auth.signOut().then(() => window.location.href = "../index.html");
-    }
-  </script></body>
+  </script>
+</body>
 </html>
